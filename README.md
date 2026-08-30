@@ -16,12 +16,42 @@ Considero que seria de gran ayuda tener una herramienta facil de usar que muestr
 ## Funcion / Objetivo
 Simular el crecimiento de ahorro o inversión a partir de datos definidos por el usuario, mostrando el avance u evolucion con el tiempo y si es posible alcanzar una meta que se estableció.
 
-## Funciones
-- Solicitar al usuario el monto de ahorro mensual, la tasa de interés anual, una meta de ahorro y el periodo máximo a simular (en años).
-- Simular el crecimiento del ahorro mes a mes, aplicando el interés de forma compuesta.
-- Indicar en qué mes se alcanza la meta, si ocurre dentro del periodo simulado.
-- Guardar cada simulación (parámetros y resultado) en un archivo de texto.
-- Consultar simulaciones guardadas anteriormente para comparar distintos escenarios.
-
 ## Pseudocodigo
+INICIO
+1. Inicio
+2. PEDIR monto_mensual, tasa_anual, meta, años_max, variacion_max al usuario
+3. DEFINIR balance = 0
+4. DEFINIR lista_balances = lista vacía
+5. DEFINIR mes_meta = -1
+6. DEFINIR mes_actual = 0
+7. PARA año DESDE 1 HASTA años_max
+   7.1. CALCULAR variacion = número aleatorio entre -variacion_max y variacion_max
+   7.2. CALCULAR tasa_anual_del_año = tasa_anual + variacion
+   7.3. CALCULAR tasa_mensual = (tasa_anual_del_año / 100) / 12
+   7.4. PARA mes DESDE 1 HASTA 12
+        7.4.1. SUMAR monto_mensual a balance
+        7.4.2. SUMAR (balance * tasa_mensual) a balance
+        7.4.3. SUMAR 1 a mes_actual
+        7.4.4. AGREGAR [mes_actual, balance] a lista_balances
+        7.4.5. SI balance >= meta Y mes_meta == -1 ENTONCES
+               7.4.5.1. mes_meta = mes_actual
+8. MOSTRAR "Saldo final: ", último balance de lista_balances
+9. SI mes_meta ≠ -1 ENTONCES
+   9.1. MOSTRAR "Meta alcanzada en el mes ", mes_meta
+10. SINO
+    10.1. MOSTRAR "No se alcanzó la meta en el periodo simulado"
+11. PREGUNTAR "¿Guardar esta simulación? (s/n)"
+12. SI respuesta == "s" ENTONCES
+    12.1. ABRIR archivo "historial.txt" en modo agregar
+    12.2. ESCRIBIR monto_mensual, tasa_anual, meta, mes_meta en archivo
+    12.3. CERRAR archivo
+13. PREGUNTAR "¿Ver simulaciones anteriores? (s/n)"
+14. SI respuesta == "s" ENTONCES
+    14.1. ABRIR archivo "historial.txt" en modo lectura
+    14.2. PARA CADA línea en archivo
+          14.2.1. MOSTRAR línea
+    14.3. CERRAR archivo
+15. Fin
+
+
 
