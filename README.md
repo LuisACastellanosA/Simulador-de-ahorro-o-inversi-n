@@ -17,6 +17,8 @@ Considero que seria de gran ayuda tener una herramienta facil de usar que muestr
 Simular el crecimiento de ahorro o inversión a partir de datos definidos por el usuario, mostrando el avance u evolucion con el tiempo y si es posible alcanzar una meta que se estableció.
 
 ## Pseudocodigo
+
+```text
 INICIO
 1. Inicio
 2. PEDIR monto_mensual, tasa_anual, meta, años_max, variacion_max al usuario
