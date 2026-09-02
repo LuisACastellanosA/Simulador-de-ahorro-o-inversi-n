@@ -54,6 +54,5 @@ INICIO
           14.2.1. MOSTRAR línea
     14.3. CERRAR archivo
 15. Fin
-
-
+```
 
