@@ -8,7 +8,7 @@ VARIACION_MAXIMA = 2  # puntos porcentuales que puede variar la tasa cada año
 # ===== funciones de entrada =====
 
 def pedir_datos():
-    """Recibe: nada. Devuelve: monto_mensual, tasa_anual, meta, anios_max"""
+    #Recibe: nada. Devuelve: monto_mensual, tasa_anual, meta, anios_max
     monto_mensual = float(input("¿Cuánto puedes ahorrar cada mes? $"))
     tasa_anual = float(input("¿Cuál es la tasa de interés anual (%)? "))
     meta = float(input("¿Cuál es tu meta de ahorro? $"))
@@ -19,13 +19,13 @@ def pedir_datos():
 # ===== funciones de cálculo =====
 
 def tasa_mensual_equivalente(tasa_anual):
-    """Recibe: tasa_anual (en porcentaje). Devuelve: tasa_mensual (en decimal)"""
+    #Recibe: tasa_anual (en porcentaje). Devuelve: tasa_mensual (en decimal)
     return (tasa_anual / 100) / 12
 
 
 def simular_ahorro(monto_mensual, tasa_anual, meta, anios_max):
-    """Recibe: monto_mensual, tasa_anual, meta, anios_max
-    Devuelve: lista_balances (lista anidada [mes, balance]), mes_meta (-1 si no se alcanzó)"""
+    #Recibe: monto_mensual, tasa_anual, meta, anios_max
+    #Devuelve: lista_balances (lista anidada [mes, balance]), mes_meta (-1 si no se alcanzó)
     balance = 0
     lista_balances = []
     mes_meta = -1
@@ -51,7 +51,7 @@ def simular_ahorro(monto_mensual, tasa_anual, meta, anios_max):
 # ===== funciones de archivo =====
 
 def guardar_simulacion(archivo, monto_mensual, tasa_anual, meta, mes_meta):
-    """Recibe: archivo, monto_mensual, tasa_anual, meta, mes_meta. Devuelve: nada"""
+    #Recibe: archivo, monto_mensual, tasa_anual, meta, mes_meta. Devuelve: nada
     with open(archivo, "a") as f:
         f.write(
             f"Ahorro mensual: ${monto_mensual} | Tasa anual base: {tasa_anual}% | "
@@ -60,7 +60,7 @@ def guardar_simulacion(archivo, monto_mensual, tasa_anual, meta, mes_meta):
 
 
 def mostrar_historial(archivo):
-    """Recibe: archivo. Devuelve: nada (imprime en pantalla)"""
+    #Recibe: archivo. Devuelve: nada (imprime en pantalla)
     try:
         with open(archivo, "r") as f:
             for linea in f:
