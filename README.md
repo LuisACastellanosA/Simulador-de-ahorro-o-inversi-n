@@ -19,32 +19,39 @@ Simular el crecimiento de ahorro o inversión a partir de datos definidos por el
 ## Pseudocodigo
 
 ```text
-1  // ---- Programa principal ----
-2  MOSTRAR "=== Simulador de Ahorro e Inversión ==="
-3  MOSTRAR "(la tasa de interés varía un poco cada año, simulando un mercado real)"
-66  monto_mensual, tasa_anual, meta, años_max = pedir_datos()
-67  lista_balances, mes_meta = simular_ahorro(monto_mensual, tasa_anual, meta, años_max)
-68  balance_final = lista_balances[último][1]
-69  MOSTRAR "Saldo final tras", años_max, "años:", balance_final
-70  SI mes_meta != -1 ENTONCES
-71      años = mes_meta DIV 12
-72      meses = mes_meta MOD 12
-73      MOSTRAR "Meta alcanzada en el mes", mes_meta, "(aprox.", años, "años y", meses, "meses)"
-74  SINO
-75      MOSTRAR "No se alcanzó la meta en el periodo simulado"
-76  FIN SI
-77  PREGUNTAR "¿Guardar esta simulación? (s/n)"
-78  LEER guardar
-79  SI guardar == "s" ENTONCES
-80      guardar_simulacion(ARCHIVO_HISTORIAL, monto_mensual, tasa_anual, meta, mes_meta)
-81      MOSTRAR "Simulación guardada."
-82  FIN SI
-83  PREGUNTAR "¿Ver simulaciones anteriores? (s/n)"
-84  LEER ver_historial
-85  SI ver_historial == "s" ENTONCES
-86      mostrar_historial(ARCHIVO_HISTORIAL)
-87  FIN SI
-88  MOSTRAR "¡Gracias por usar el simulador!"
-89  FIN
+1. Inicio
+2. PEDIR monto_mensual, tasa_anual, meta, años_max, variacion_max al usuario
+3. DEFINIR balance = 0
+4. DEFINIR lista_balances = lista vacía
+5. DEFINIR mes_meta = -1
+6. DEFINIR mes_actual = 0
+7. PARA año DESDE 1 HASTA años_max
+   7.1. CALCULAR variacion = número aleatorio entre -variacion_max y variacion_max
+   7.2. CALCULAR tasa_anual_del_año = tasa_anual + variacion
+   7.3. CALCULAR tasa_mensual = (tasa_anual_del_año / 100) / 12
+   7.4. PARA mes DESDE 1 HASTA 12
+        7.4.1. SUMAR monto_mensual a balance
+        7.4.2. SUMAR (balance * tasa_mensual) a balance
+        7.4.3. SUMAR 1 a mes_actual
+        7.4.4. AGREGAR [mes_actual, balance] a lista_balances
+        7.4.5. SI balance >= meta Y mes_meta == -1 ENTONCES
+               7.4.5.1. mes_meta = mes_actual
+8. MOSTRAR "Saldo final: ", último balance de lista_balances
+9. SI mes_meta ≠ -1 ENTONCES
+   9.1. MOSTRAR "Meta alcanzada en el mes ", mes_meta
+10. SINO
+    10.1. MOSTRAR "No se alcanzó la meta en el periodo simulado"
+11. PREGUNTAR "¿Guardar esta simulación? (s/n)"
+12. SI respuesta == "s" ENTONCES
+    12.1. ABRIR archivo "historial.txt" en modo agregar
+    12.2. ESCRIBIR monto_mensual, tasa_anual, meta, mes_meta en archivo
+    12.3. CERRAR archivo
+13. PREGUNTAR "¿Ver simulaciones anteriores? (s/n)"
+14. SI respuesta == "s" ENTONCES
+    14.1. ABRIR archivo "historial.txt" en modo lectura
+    14.2. PARA CADA línea en archivo
+          14.2.1. MOSTRAR línea
+    14.3. CERRAR archivo
+15. Fin
 ```
 
