@@ -19,71 +19,9 @@ Simular el crecimiento de ahorro o inversión a partir de datos definidos por el
 ## Pseudocodigo
 
 ```text
- 1  INICIO
- 2  CONSTANTE ARCHIVO_HISTORIAL = "historial.txt"
- 3  CONSTANTE VARIACION_MAXIMA = 2   // puntos porcentuales que puede variar la tasa cada año
- 4  FUNCION pedir_datos()
- 5      // Recibe: nada
- 6      // Devuelve: monto_mensual, tasa_anual, meta, años_max
- 7      LEER monto_mensual
- 8      LEER tasa_anual
- 9      LEER meta
-10      LEER años_max
-11      DEVOLVER monto_mensual, tasa_anual, meta, años_max
-12  FIN FUNCION
-13  FUNCION tasa_mensual_equivalente(tasa_anual)
-14      // Recibe: tasa_anual (en porcentaje)
-15      // Devuelve: tasa_mensual (en decimal)
-16      tasa_mensual = (tasa_anual / 100) / 12
-17      DEVOLVER tasa_mensual
-18  FIN FUNCION
-19  FUNCION simular_ahorro(monto_mensual, tasa_anual, meta, años_max)
-20      // Recibe: monto_mensual, tasa_anual, meta, años_max
-21      // Devuelve: lista_balances (lista anidada: [mes, balance] por cada mes),
-22      //           mes_meta (-1 si no se alcanzó)
-23      balance = 0
-24      lista_balances = LISTA VACÍA
-25      mes_meta = -1
-26      mes_actual = 0
-27      PARA año DESDE 1 HASTA años_max
-28          // la tasa varía un poco cada año, simulando un mercado real
-29          tasa_anual_del_año = tasa_anual + NUMERO_ALEATORIO_ENTRE(-VARIACION_MAXIMA, VARIACION_MAXIMA)
-30          tasa_mensual_del_año = tasa_mensual_equivalente(tasa_anual_del_año)
-31          PARA mes DESDE 1 HASTA 12
-32              balance = balance + monto_mensual
-33              balance = balance + (balance * tasa_mensual_del_año)
-34              mes_actual = mes_actual + 1
-35              AGREGAR [mes_actual, balance] A lista_balances
-36              SI balance >= meta Y mes_meta == -1 ENTONCES
-37                  mes_meta = mes_actual
-38              FIN SI
-39          FIN PARA
-40      FIN PARA
-41      DEVOLVER lista_balances, mes_meta
-42  FIN FUNCION
-43  FUNCION guardar_simulacion(archivo, monto_mensual, tasa_anual, meta, mes_meta)
-44      // Recibe: archivo, monto_mensual, tasa_anual, meta, mes_meta
-45      // Devuelve: nada (escribe en archivo)
-46      ABRIR archivo EN MODO agregar
-47      ESCRIBIR monto_mensual, tasa_anual, meta, mes_meta EN archivo
-48      CERRAR archivo
-49  FIN FUNCION
-50  FUNCION mostrar_historial(archivo)
-51      // Recibe: archivo
-52      // Devuelve: nada (imprime en pantalla)
-53      INTENTAR
-54          ABRIR archivo EN MODO lectura
-55          PARA CADA línea EN archivo
-56              MOSTRAR línea
-57          FIN PARA
-58          CERRAR archivo
-59      SI EL ARCHIVO NO EXISTE ENTONCES
-60          MOSTRAR "Todavía no hay simulaciones guardadas."
-61      FIN INTENTAR
-62  FIN FUNCION
-63  // ---- Programa principal ----
-64  MOSTRAR "=== Simulador de Ahorro e Inversión ==="
-65  MOSTRAR "(la tasa de interés varía un poco cada año, simulando un mercado real)"
+1  // ---- Programa principal ----
+2  MOSTRAR "=== Simulador de Ahorro e Inversión ==="
+3  MOSTRAR "(la tasa de interés varía un poco cada año, simulando un mercado real)"
 66  monto_mensual, tasa_anual, meta, años_max = pedir_datos()
 67  lista_balances, mes_meta = simular_ahorro(monto_mensual, tasa_anual, meta, años_max)
 68  balance_final = lista_balances[último][1]
