@@ -174,6 +174,16 @@ def mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
     print(f"Tú aportaste ${total_aportado:.2f} y los intereses "
           f"sumaron ${intereses:.2f}.")
 
+    # resumen al cierre de cada año, tomado de la lista anidada
+    print("\nAño | Saldo al cierre")
+    for registro in lista_balances:
+        mes = registro[0]
+        balance = registro[1]
+        if mes % MESES_POR_ANIO == 0:
+            anio = mes // MESES_POR_ANIO
+            print(f"{anio:>3} | ${balance:,.2f}")
+    print()
+
     if mes_meta == -1:
         faltante = meta - balance_final
         porcentaje = balance_final / meta * 100
@@ -220,12 +230,24 @@ def mostrar_historial(archivo):
 
     Recibe: archivo. Devuelve: nada (imprime en pantalla).
     """
+    total_simulaciones = 0
+    metas_alcanzadas = 0
     try:
         with open(archivo, "r", encoding="utf-8") as archivo_texto:
             for linea in archivo_texto:
-                print(linea, end="")
+                total_simulaciones += 1
+                print(f"{total_simulaciones}. {linea}", end="")
+                if "Meta alcanzada" in linea:
+                    metas_alcanzadas += 1
     except FileNotFoundError:
         print("Todavía no hay simulaciones guardadas.")
+        return
+
+    if total_simulaciones == 0:
+        print("Todavía no hay simulaciones guardadas.")
+    else:
+        print(f"\nSimulaciones guardadas: {total_simulaciones} | "
+              f"Metas alcanzadas: {metas_alcanzadas}")
 
 
 # ===== programa principal =====
@@ -236,22 +258,30 @@ def main():
     print("(la tasa de interés varía un poco cada año, "
           "simulando un mercado real)\n")
 
-    monto_mensual, tasa_anual, meta, anios_max = pedir_datos()
+    numero_simulacion = 0
+    otra_simulacion = True
+    while otra_simulacion:
+        numero_simulacion += 1
+        print(f"\n--- Simulación {numero_simulacion} ---")
+        monto_mensual, tasa_anual, meta, anios_max = pedir_datos()
 
-    lista_balances, mes_meta = simular_ahorro(monto_mensual, tasa_anual,
-                                              meta, anios_max)
+        lista_balances, mes_meta = simular_ahorro(monto_mensual, tasa_anual,
+                                                  meta, anios_max)
 
-    mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
-                      anios_max)
+        mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
+                          anios_max)
 
-    if preguntar_si_no("\n¿Quieres guardar esta simulación? (s/n) "):
-        balance_final = lista_balances[-1][1]
-        guardar_simulacion(ARCHIVO_HISTORIAL, monto_mensual, tasa_anual,
-                           meta, anios_max, balance_final, mes_meta)
-        print("Simulación guardada.")
+        if preguntar_si_no("\n¿Quieres guardar esta simulación? (s/n) "):
+            balance_final = lista_balances[-1][1]
+            guardar_simulacion(ARCHIVO_HISTORIAL, monto_mensual, tasa_anual,
+                               meta, anios_max, balance_final, mes_meta)
+            print("Simulación guardada.")
 
-    if preguntar_si_no("¿Quieres ver simulaciones anteriores? (s/n) "):
-        mostrar_historial(ARCHIVO_HISTORIAL)
+        if preguntar_si_no("¿Quieres ver simulaciones anteriores? (s/n) "):
+            mostrar_historial(ARCHIVO_HISTORIAL)
+
+        otra_simulacion = preguntar_si_no(
+            "\n¿Quieres hacer otra simulación? (s/n) ")
 
     print("\n¡Gracias por usar el simulador!")
 
