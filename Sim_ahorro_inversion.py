@@ -97,11 +97,13 @@ def simular_ahorro(monto_mensual, tasa_anual, meta, anios_max):
     """Simula mes a mes el crecimiento del ahorro con una tasa variable.
 
     Recibe: monto_mensual, tasa_anual, meta, anios_max.
-    Devuelve: lista_balances (lista anidada [mes, balance]) y
+    Devuelve: lista_balances (lista anidada [mes, balance]),
+    tasas_anuales (lista con la tasa aplicada cada año) y
     mes_meta (-1 si no se alcanzó la meta).
     """
     balance = 0.0
     lista_balances = []
+    tasas_anuales = []
     mes_meta = -1
     mes_actual = 0
 
@@ -115,6 +117,7 @@ def simular_ahorro(monto_mensual, tasa_anual, meta, anios_max):
         tasa_anual_del_anio = tasa_anual + variacion
         if tasa_anual_del_anio < TASA_MINIMA:
             tasa_anual_del_anio = TASA_MINIMA
+        tasas_anuales.append(tasa_anual_del_anio)
         tasa_mensual_del_anio = tasa_mensual_equivalente(tasa_anual_del_anio)
 
         for mes in range(MESES_POR_ANIO):
@@ -126,7 +129,7 @@ def simular_ahorro(monto_mensual, tasa_anual, meta, anios_max):
             if balance >= meta and mes_meta == -1:
                 mes_meta = mes_actual
 
-    return lista_balances, mes_meta
+    return lista_balances, tasas_anuales, mes_meta
 
 
 def formatear_tiempo(total_meses):
@@ -157,11 +160,12 @@ def formatear_tiempo(total_meses):
 
 # ===== funciones de salida =====
 
-def mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
-                      anios_max):
+def mostrar_resultado(lista_balances, tasas_anuales, mes_meta, meta,
+                      monto_mensual, anios_max):
     """Muestra el saldo final, los intereses y qué tan bien va la meta.
 
-    Recibe: lista_balances, mes_meta, meta, monto_mensual, anios_max.
+    Recibe: lista_balances, tasas_anuales, mes_meta, meta, monto_mensual,
+    anios_max.
     Devuelve: nada (imprime en pantalla).
     """
     total_meses = anios_max * MESES_POR_ANIO
@@ -175,14 +179,17 @@ def mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
           f"sumaron ${intereses:.2f}.")
 
     # resumen al cierre de cada año, tomado de la lista anidada
-    print("\nAño | Saldo al cierre")
+    print("\nAño | Tasa aplicada | Saldo al cierre")
     for registro in lista_balances:
         mes = registro[0]
         balance = registro[1]
         if mes % MESES_POR_ANIO == 0:
             anio = mes // MESES_POR_ANIO
-            print(f"{anio:>3} | ${balance:,.2f}")
-    print()
+            tasa_del_anio = tasas_anuales[anio - 1]
+            print(f"{anio:>3} | {tasa_del_anio:>12.2f}% | ${balance:,.2f}")
+
+    tasa_promedio = sum(tasas_anuales) / len(tasas_anuales)
+    print(f"Tasa promedio del periodo: {tasa_promedio:.2f}%\n")
 
     if mes_meta == -1:
         faltante = meta - balance_final
@@ -258,6 +265,8 @@ def main():
     print("(la tasa de interés varía un poco cada año, "
           "simulando un mercado real)\n")
 
+    # cada elemento es [numero_simulacion, balance_final, mes_meta]
+    resultados_sesion = []
     numero_simulacion = 0
     otra_simulacion = True
     while otra_simulacion:
@@ -265,14 +274,17 @@ def main():
         print(f"\n--- Simulación {numero_simulacion} ---")
         monto_mensual, tasa_anual, meta, anios_max = pedir_datos()
 
-        lista_balances, mes_meta = simular_ahorro(monto_mensual, tasa_anual,
-                                                  meta, anios_max)
+        lista_balances, tasas_anuales, mes_meta = simular_ahorro(
+            monto_mensual, tasa_anual, meta, anios_max)
 
-        mostrar_resultado(lista_balances, mes_meta, meta, monto_mensual,
-                          anios_max)
+        mostrar_resultado(lista_balances, tasas_anuales, mes_meta, meta,
+                          monto_mensual, anios_max)
+
+        balance_final = lista_balances[-1][1]
+        resultados_sesion.append([numero_simulacion, balance_final,
+                                  mes_meta])
 
         if preguntar_si_no("\n¿Quieres guardar esta simulación? (s/n) "):
-            balance_final = lista_balances[-1][1]
             guardar_simulacion(ARCHIVO_HISTORIAL, monto_mensual, tasa_anual,
                                meta, anios_max, balance_final, mes_meta)
             print("Simulación guardada.")
@@ -282,6 +294,26 @@ def main():
 
         otra_simulacion = preguntar_si_no(
             "\n¿Quieres hacer otra simulación? (s/n) ")
+
+    # si hubo más de una simulación, se comparan usando la lista
+    if len(resultados_sesion) > 1:
+        print("\n=== Comparación de tus simulaciones ===")
+        mejor_resultado = resultados_sesion[0]
+        for resultado in resultados_sesion:
+            numero = resultado[0]
+            saldo = resultado[1]
+            mes_meta_resultado = resultado[2]
+            if mes_meta_resultado == -1:
+                texto_meta = "no alcanzó la meta"
+            else:
+                texto_meta = (f"meta en "
+                              f"{formatear_tiempo(mes_meta_resultado)}")
+            print(f"Simulación {numero}: saldo final ${saldo:,.2f}, "
+                  f"{texto_meta}")
+            if saldo > mejor_resultado[1]:
+                mejor_resultado = resultado
+        print(f"La simulación con mayor saldo final fue la "
+              f"{mejor_resultado[0]}.")
 
     print("\n¡Gracias por usar el simulador!")
 
